@@ -1,0 +1,11 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1080" height="1920" fill="#FFF6EC"/>
+  <path d="M-110 337C-48 151 193 71 392 150C589 229 666 445 561 617C455 790 194 848 36 720C-71 633 -154 469 -110 337Z" fill="#F7B7B2" opacity="0.55"/>
+  <path d="M701 1266C823 1123 1058 1122 1196 1262C1336 1403 1304 1641 1132 1743C961 1844 711 1769 650 1587C615 1483 623 1357 701 1266Z" fill="#B9A7F2" opacity="0.5"/>
+  <path d="M231 819C180 664 239 470 389 382C530 298 727 334 832 463C934 588 944 780 842 909C733 1049 514 1090 368 999C302 958 257 905 231 819Z" fill="#F7B7B2"/>
+  <path d="M338 816C306 716 344 594 439 538C529 485 654 508 721 590C786 670 794 793 729 875C660 964 519 991 426 932C383 905 355 872 338 816Z" fill="#FFFDF8"/>
+  <path d="M460 638C506 591 585 591 632 637C679 684 679 759 632 806L546 891L460 806C413 759 413 684 460 638Z" fill="#F47F7A"/>
+  <path d="M228 1036C399 1213 691 1272 950 1076" stroke="#4B2E57" stroke-width="48" stroke-linecap="round"/>
+  <text x="540" y="1357" text-anchor="middle" fill="#4B2E57" font-family="Nunito, Quicksand, Arial Rounded MT Bold, Arial, sans-serif" font-size="126" font-weight="800" letter-spacing="-5">Nestory</text>
+  <text x="540" y="1427" text-anchor="middle" fill="#6F6077" font-family="Nunito, Quicksand, Arial, sans-serif" font-size="38" font-weight="500">Shared life, softly organized.</text>
+</svg>

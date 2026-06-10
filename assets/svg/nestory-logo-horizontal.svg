@@ -1,0 +1,10 @@
+<svg width="1400" height="420" viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(40,40)">
+    <path d="M28 207C8 124 47 41 122 14C192 -11 273 15 314 78C356 143 350 231 294 284C236 340 133 347 73 294C49 273 36 244 28 207Z" fill="#F7B7B2"/>
+    <path d="M86 205C69 153 89 89 139 60C186 32 252 44 287 87C321 128 325 192 291 235C255 282 181 296 132 265C110 251 95 234 86 205Z" fill="#FFFDF8"/>
+    <path d="M162 115C181 96 214 96 233 115C252 134 252 165 233 184L198 219L162 184C143 165 143 134 162 115Z" fill="#F47F7A"/>
+    <path d="M53 273C125 347 249 371 356 291" stroke="#4B2E57" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  <text x="445" y="240" fill="#4B2E57" font-family="Nunito, Quicksand, Arial Rounded MT Bold, Arial, sans-serif" font-size="132" font-weight="800" letter-spacing="-5">Nestory</text>
+  <text x="454" y="306" fill="#6F6077" font-family="Nunito, Quicksand, Arial, sans-serif" font-size="36" font-weight="500">Shared life, softly organized.</text>
+</svg>
