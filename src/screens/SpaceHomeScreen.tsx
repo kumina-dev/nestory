@@ -9,8 +9,10 @@ import { previewEvents, previewNotes, previewSpace, previewTasks } from "../feat
 import { nestoryTheme } from "../theme/nestoryTheme";
 
 export function SpaceHomeScreen() {
+  const memberSummary = previewSpace.memberships.map((membership) => membership.displayName).join(", ");
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -19,8 +21,8 @@ export function SpaceHomeScreen() {
         <View style={styles.hero}>
           <RibbonHeader
             eyebrow="Current space"
-            title={previewSpace.name}
-            subtitle={previewSpace.memberSummary}
+            title={previewSpace.space.name}
+            subtitle={memberSummary}
             tone="blush"
           />
 
@@ -59,7 +61,7 @@ export function SpaceHomeScreen() {
                 <Text style={styles.points}>+{task.carePoints}</Text>
               </View>
               <Text style={styles.itemMeta}>
-                {task.assignedTo} – {task.recurrenceLabel}
+                {task.assignedToDisplayName} - {task.recurrenceLabel}
               </Text>
             </PebbleCard>
           ))}
@@ -72,7 +74,7 @@ export function SpaceHomeScreen() {
               <View style={styles.noteText}>
                 <Text style={styles.itemTitle}>{note.title}</Text>
                 <Text style={styles.itemMeta}>
-                  {note.category} – {note.visibility}
+                  {note.category} - {note.visibility}
                 </Text>
               </View>
             </View>
