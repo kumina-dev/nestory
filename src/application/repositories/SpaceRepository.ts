@@ -6,7 +6,7 @@ export type SpaceMembershipQuery = {
 };
 
 export interface SpaceRepository {
-  getSpaceId(spaceId: SpaceId): Promise<RelationshipSpace | null>;
+  getSpaceById(spaceId: SpaceId): Promise<RelationshipSpace | null>;
   listSpacesForUser(userId: UserId): Promise<RelationshipSpace[]>;
   listMemberships(query: SpaceMembershipQuery): Promise<SpaceMembership[]>;
   getMembership(spaceId: SpaceId, userId: UserId): Promise<SpaceMembership | null>;
