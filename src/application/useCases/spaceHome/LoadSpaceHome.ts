@@ -1,5 +1,5 @@
 import { SpaceCalendarEvent } from "../../../domain/calendar/CalendarEvent";
-import { CarePointAccount } from "../../../domain/care/CarePoints";
+import { CarePointAccount, CarePointLevelPolicy, CarePointLevelProgress } from "../../../domain/care";
 import { SpaceNote } from "../../../domain/notes/Note";
 import { SpaceId, UserId } from "../../../domain/shared/ids";
 import { IsoDateTimeString } from "../../../domain/shared/time";
@@ -28,6 +28,7 @@ export type SpaceHomeData = {
   visibleNotes: SpaceNote[];
   upcomingEvents: SpaceCalendarEvent[];
   currentCarePointAccount: CarePointAccount | null;
+  currentCarePointLevelProgress: CarePointLevelProgress | null;
   openCarePointTotal: number;
 };
 
@@ -37,6 +38,7 @@ export type LoadSpaceHomeDependencies = {
   noteRepository: NoteRepository;
   calendarEventRepository: CalendarEventRepository;
   carePointRepository: CarePointRepository;
+  carePointLevelPolicy?: CarePointLevelPolicy;
 };
 
 export class LoadSpaceHomeUseCase {
@@ -85,8 +87,15 @@ export class LoadSpaceHomeUseCase {
       visibleNotes,
       upcomingEvents,
       currentCarePointAccount,
+      currentCarePointLevelProgress: currentCarePointAccount
+        ? this.getCarePointLevelPolicy().getProgress(currentCarePointAccount.lifetimePoints)
+        : null,
       openCarePointTotal: openTasks.reduce((total, task) => total + task.carePoints, 0),
     };
+  }
+
+  private getCarePointLevelPolicy(): CarePointLevelPolicy {
+    return this.dependencies.carePointLevelPolicy ?? new CarePointLevelPolicy();
   }
 }
 
