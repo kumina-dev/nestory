@@ -1,10 +1,17 @@
 import { SpaceCalendarEvent } from "../../../domain/calendar/CalendarEvent";
+import { CarePointAccount } from "../../../domain/care/CarePoints";
 import { SpaceNote } from "../../../domain/notes/Note";
 import { SpaceId, UserId } from "../../../domain/shared/ids";
 import { IsoDateTimeString } from "../../../domain/shared/time";
 import { RelationshipSpace, SpaceMembership } from "../../../domain/spaces/Space";
 import { SpaceTask } from "../../../domain/tasks/Task";
-import { CalendarEventRepository, NoteRepository, SpaceRepository, TaskRepository } from "../../repositories";
+import {
+  CalendarEventRepository,
+  CarePointRepository,
+  NoteRepository,
+  SpaceRepository,
+  TaskRepository,
+} from "../../repositories";
 
 export type LoadSpaceHomeInput = {
   spaceId: SpaceId;
@@ -20,6 +27,7 @@ export type SpaceHomeData = {
   openTasks: SpaceTask[];
   visibleNotes: SpaceNote[];
   upcomingEvents: SpaceCalendarEvent[];
+  currentCarePointAccount: CarePointAccount | null;
   openCarePointTotal: number;
 };
 
@@ -28,13 +36,15 @@ export type LoadSpaceHomeDependencies = {
   taskRepository: TaskRepository;
   noteRepository: NoteRepository;
   calendarEventRepository: CalendarEventRepository;
+  carePointRepository: CarePointRepository;
 };
 
 export class LoadSpaceHomeUseCase {
   constructor(private readonly dependencies: LoadSpaceHomeDependencies) {}
 
   async execute(input: LoadSpaceHomeInput): Promise<SpaceHomeData> {
-    const { spaceRepository, taskRepository, noteRepository, calendarEventRepository } = this.dependencies;
+    const { spaceRepository, taskRepository, noteRepository, calendarEventRepository, carePointRepository } =
+      this.dependencies;
 
     const [space, currentMembership] = await Promise.all([
       spaceRepository.getSpaceById(input.spaceId),
@@ -49,7 +59,7 @@ export class LoadSpaceHomeUseCase {
       throw new LoadSpaceHomeError("space-access-denied");
     }
 
-    const [memberships, openTasks, visibleNotes, upcomingEvents] = await Promise.all([
+    const [memberships, openTasks, visibleNotes, upcomingEvents, currentCarePointAccount] = await Promise.all([
       spaceRepository.listMemberships({ spaceId: input.spaceId }),
       taskRepository.listTasks({ spaceId: input.spaceId, status: "open" }),
       noteRepository.listNotes({
@@ -61,6 +71,10 @@ export class LoadSpaceHomeUseCase {
         startsAtOrAfter: input.eventWindowStart,
         startsBefore: input.eventWindowEnd,
       }),
+      carePointRepository.getAccount({
+        spaceId: input.spaceId,
+        userId: input.requesterUserId,
+      }),
     ]);
 
     return {
@@ -70,6 +84,7 @@ export class LoadSpaceHomeUseCase {
       openTasks,
       visibleNotes,
       upcomingEvents,
+      currentCarePointAccount,
       openCarePointTotal: openTasks.reduce((total, task) => total + task.carePoints, 0),
     };
   }
