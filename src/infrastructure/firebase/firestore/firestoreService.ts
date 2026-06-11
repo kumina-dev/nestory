@@ -4,6 +4,7 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  PartialWithFieldValue,
   query,
   serverTimestamp,
   setDoc,
@@ -79,7 +80,7 @@ export function saveDocument<T extends DocumentData>(
 
 export function mergeDocument<T extends DocumentData>(
   path: string,
-  data: Partial<WithFieldValue<T>>,
+  data: PartialWithFieldValue<T>,
 ): Promise<void> {
   return setDoc(firestoreDocument<T>(path), data, { merge: true });
 }
