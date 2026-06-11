@@ -1,0 +1,111 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function memberPath(spaceId) {
+      return /databases/$(database)/documents/spaces/$(spaceId)/members/$(request.auth.uid);
+    }
+
+    function isActiveMember(spaceId) {
+      return signedIn()
+        && exists(memberPath(spaceId))
+        && get(memberPath(spaceId)).data.status == "active";
+    }
+
+    function memberRole(spaceId) {
+      return get(memberPath(spaceId)).data.role;
+    }
+
+    function isAdminOrOwner(spaceId) {
+      return isActiveMember(spaceId)
+        && (memberRole(spaceId) == "owner" || memberRole(spaceId) == "admin");
+    }
+
+    function canReadNote(spaceId) {
+      return isActiveMember(spaceId)
+        && (
+          resource.data.visibility == "space"
+          || resource.data.createdBy == request.auth.uid
+          || (
+            "visibleToUserIds" in resource.data
+            && request.auth.uid in resource.data.visibleToUserIds
+          )
+        );
+    }
+
+    match /users/{userId} {
+      allow read, create, update: if isSelf(userId);
+      allow delete: if false;
+    }
+
+    match /spaces/{spaceId} {
+      allow read: if isActiveMember(spaceId);
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isAdminOrOwner(spaceId);
+      allow delete: if false;
+
+      match /members/{userId} {
+        allow read: if isActiveMember(spaceId);
+        allow create, update: if isAdminOrOwner(spaceId);
+        allow delete: if false;
+      }
+
+      match /tasks/{taskId} {
+        allow read: if isActiveMember(spaceId);
+        allow create: if isActiveMember(spaceId)
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update: if isActiveMember(spaceId);
+        allow delete: if false;
+      }
+
+      match /notes/{noteId} {
+        allow read: if canReadNote(spaceId);
+        allow create: if isActiveMember(spaceId)
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update: if isActiveMember(spaceId)
+          && (
+            resource.data.visibility == "space"
+            || resource.data.createdBy == request.auth.uid
+          );
+        allow delete: if false;
+      }
+
+      match /events/{eventId} {
+        allow read: if isActiveMember(spaceId);
+        allow create: if isActiveMember(spaceId)
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update: if isActiveMember(spaceId);
+        allow delete: if false;
+      }
+
+      match /categories/{categoryId} {
+        allow read: if isActiveMember(spaceId);
+        allow create: if isActiveMember(spaceId)
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update: if isActiveMember(spaceId);
+        allow delete: if false;
+      }
+
+      match /pointEvents/{eventId} {
+        allow read: if isActiveMember(spaceId);
+        allow create: if isActiveMember(spaceId)
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update, delete: if false;
+      }
+
+      match /pointsPeriods/{periodId} {
+        allow read: if isActiveMember(spaceId);
+        allow create, update: if isAdminOrOwner(spaceId);
+        allow delete: if false;
+      }
+    }
+  }
+}
