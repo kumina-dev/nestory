@@ -41,6 +41,45 @@ service cloud.firestore {
         );
     }
 
+    function canManageTask(spaceId) {
+      return isAdminOrOwner(spaceId)
+        || (
+          isActiveMember(spaceId)
+          && resource.data.createdBy == request.auth.uid
+        );
+    }
+
+    function taskHasAssignedUsers() {
+      return "assignedUserIds" in resource.data
+        && resource.data.assignedUserIds.size() > 0;
+    }
+
+    function taskCompletionAllowsUser() {
+      return (
+        "completionMode" in resource.data
+        && resource.data.completionMode == "anyone"
+      )
+      || (
+        !("completionMode" in resource.data)
+        && !taskHasAssignedUsers()
+      )
+      || (
+        taskHasAssignedUsers()
+        && request.auth.uid in resource.data.assignedUserIds
+      );
+    }
+
+    function isTaskCompletionUpdate(spaceId) {
+      return isActiveMember(spaceId)
+        && resource.data.status == "open"
+        && request.resource.data.status == "completed"
+        && request.resource.data.completedBy == request.auth.uid
+        && request.resource.data.completedAt != null
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["status", "completedBy", "completedAt", "updatedAt"])
+        && taskCompletionAllowsUser();
+    }
+
     match /users/{userId} {
       allow read, create, update: if isSelf(userId);
       allow delete: if false;
@@ -62,7 +101,8 @@ service cloud.firestore {
         allow read: if isActiveMember(spaceId);
         allow create: if isActiveMember(spaceId)
           && request.resource.data.createdBy == request.auth.uid;
-        allow update: if isActiveMember(spaceId);
+        allow update: if canManageTask(spaceId)
+          || isTaskCompletionUpdate(spaceId);
         allow delete: if false;
       }
 
